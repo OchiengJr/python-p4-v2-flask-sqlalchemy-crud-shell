@@ -1,25 +1,33 @@
-# server/app.py
+#!/usr/bin/env python3
 
 from flask import Flask
 from flask_migrate import Migrate
 
 from models import db
 
-# create a Flask application instance 
+# Create a Flask application instance 
 app = Flask(__name__)
 
-# configure the database connection to the local file app.db
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+# Configure the application
+class Config:
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-# configure flag to disable modification tracking and use less memory
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_object(Config)
 
-# create a Migrate object to manage schema modifications
+# Initialize the database and migration tool
+db.init_app(app)
 migrate = Migrate(app, db)
 
-# initialize the Flask application to use the database
-db.init_app(app)
+# Register blueprints here (example)
+# from your_blueprint_module import your_blueprint
+# app.register_blueprint(your_blueprint)
 
+# Define routes (if not using blueprints)
+@app.route('/')
+def home():
+    return "Welcome to the Flask app!"
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
+
